@@ -17,6 +17,20 @@
     <a-scene>
       <!-- Assets -->
       <a-assets>
+        <a-assets>
+          <audio id="click-sound" crossorigin="anonymous" src="https://cdn.aframe.io/360-image-gallery-boilerplate/audio/click.ogg"></audio>
+          
+          <img id="home" crossorigin="anonymous" src="https://cdn.glitch.me/e3f83d2d-8560-4e2f-a8f5-e860452333e9%2FSierra_Madre_B_HiRes_TMap.jpg?v=1634157669969">
+          
+          <img id="mountains" crossorigin="anonymous" src="https://cdn.glitch.me/e3f83d2d-8560-4e2f-a8f5-e860452333e9%2FMilkyway_BG.jpg?v=1634157117025">
+          <img id="forest" crossorigin="anonymous" src="https://cdn.glitch.me/e3f83d2d-8560-4e2f-a8f5-e860452333e9%2FWinterForest_8k.jpg?v=1634157676903">
+        
+          <a-asset-item id="tree-obj" src="https://cdn.glitch.me/e3f83d2d-8560-4e2f-a8f5-e860452333e9%2Fsnowmanagain.obj?v=1634158804737"></a-asset-item>
+          <a-asset-item id="tree-mtl" src="https://cdn.glitch.me/e3f83d2d-8560-4e2f-a8f5-e860452333e9%2Fsnowmanagain.mtl?v=1634159387531"></a-asset-item>
+  
+          <a-asset-item id="mtn-obj" src="https://cdn.glitch.me/e3f83d2d-8560-4e2f-a8f5-e860452333e9%2FStar%20(1).obj?v=1634160493735"></a-asset-item>
+          <a-asset-item id="mtn-mtl" src="https://cdn.glitch.me/e3f83d2d-8560-4e2f-a8f5-e860452333e9%2FStar.mtl?v=1634160731157"></a-asset-item>
+        </a-assets>
       </a-assets>
 
       <!-- Home Background -->
@@ -77,42 +91,6 @@
 
     <script>
       var viewingScene = false;
-      //Firebase initialization
-      var config = {
-                  apiKey: "AIzaSyAi_j5zE2Safbb-pQwJ2y9jSC-SW3t-AGo",
-                  authDomain: "hackvr-f2bdb.firebaseapp.com",
-                  databaseURL: "https://hackvr-f2bdb.firebaseio.com",
-                  projectId: "hackvr-f2bdb",
-                  storageBucket: "hackvr-f2bdb.appspot.com",
-                  messagingSenderId: "961200201842"
-                };
-      firebase.initializeApp(config);
-
-
-      firebase.auth().signInAnonymously().catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // ...
-      });
-
-      // Get a reference to the database service
-      var database = firebase.database();
-
-      var dbRef = firebase.database().ref('/');
-      var currentState;
-      dbRef.on('value', function(snapshot) {
-        // var outputValue;
-        // if(snapshot.val()>.5) {outputValue = 1;} else {outputValue=0}
-
-        // onDBUpdate(outputValue);
-        currentState = snapshot.val();
-        onDBUpdate(snapshot.val());
-      });
-
-      var onDBUpdate = function (val ) {
-        // console.log(val);
-      }
 
       /* Fixed Clock*/
       function startTime() {
@@ -156,7 +134,10 @@
       // init call -- for infinite loop setup
       var initCall = true;
       // array of overlapping music
-      var audio = new Array(
+      var audio = new Array(new Audio('https://cdn.glitch.com/b4f4d521-4cdc-400e-a428-c1b11013cb06%2F1ambiance.aac?1494793522720'),
+        new Audio('https://cdn.glitch.com/b4f4d521-4cdc-400e-a428-c1b11013cb06%2F2drone.aac?1494793522449'),
+        new Audio('https://cdn.glitch.com/b4f4d521-4cdc-400e-a428-c1b11013cb06%2F3harmony.aac?1494793526732'),
+        new Audio('https://cdn.glitch.com/b4f4d521-4cdc-400e-a428-c1b11013cb06%2F5choir.aac?1494793523839')
         
       );
       audio[0].volume = 0.8;
