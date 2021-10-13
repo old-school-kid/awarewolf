@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Kindred Spirits</title>
+    <meta name="description" content="Meet Your Spirit Guide. Meditate together.">
+    <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script src="https://unpkg.com/aframe-animation-component@3.2.1/dist/aframe-animation-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-particle-system-component@1.0.x/dist/aframe-particle-system-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-outline@%5E1.1.0/build/aframe-outline.min.js"></script>
+
+  </head>
+  <body>
+
+    <!-- Aframe -->
+    <a-scene>
+      <!-- Assets -->
+      <a-assets>
+      </a-assets>
+
+      <!-- Home Background -->
+      <a-sky class="home" id="homeScreen" src="#home"></a-sky>
+
+      <a-entity class="home" id="homeMenu">
+        <!-- Welcome Text -->
+        <a-text position="-1 2.5 -2" color="white" value="Welcome!" scale="2 2 2"></a-text>
+        <a-text position="-1.29 2 -2" color="white" value="Where would you like to meditate today?" scale=".75 .75 .75"></a-text>
+
+      <!-- Menu Icons -->
+        <a-entity id="sceneMenu" opacity="0" position="0 -20 0" scale="1 1 1" rotation="" visible="">
+
+          <!-- Mountains -->
+          <a-entity id="miniMt" class="menuObject" position="-2.5 .2 -4.5" scale=".2 .2. .2" visible="">
+            <a-entity obj-model="obj: #mtn-obj; mtl: #mtn-mtl"></a-entity>
+          </a-entity>
+
+          <!-- Trees -->
+          <a-entity id="miniTree" class="menuObject" position="2.4 .7 -5" rotation="" scale=".35 .35 .35" visible="">
+            <a-entity obj-model="obj: #tree-obj; mtl: #tree-mtl"></a-entity>
+          </a-entity>
+        </a-entity>
+
+      </a-entity> <!-- End homeMenu -->
+
+      <!-- Visual Add-ons -->
+      <a-entity id="visualQueues">
+        <a-entity id="dust" position="1 1 1" particle-system="preset: dust; particleCount: 6000;color: #fcffb7" visible = "false"></a-entity>
+        <a-entity id="snow" particle-system="preset:snow;particleCount:2000; color: #fcffb7" visible = "false"></a-entity>
+        <a-entity id="rain" particle-system="preset:rain; color: #fcffb7" visible = "false"></a-entity>
+      </a-entity>
+
+      <a-camera id="camera">
+        <a-cursor color="white" opacity="0"></a-cursor>
+        <a-entity id="calmSlide" position="0 -100 0" opacity="0">
+<!--         <a-text id="calmtext" rotation="-11.11 0.401 -0.057" position="-0.07 .02 -.094"  scale="0.25 0.25 0.25" -->
+<!--                   value="calm" color="#ddd"></a-text> -->
+        </a-entity>
+      </a-camera>
+
+      <a-entity camera look-controls>
+<!--         <a-text id="time" scale="0.3 0.3 0.3" position="-1 0 -1"
+                  value="clock" color="#fff"></a-text> -->
+      </a-entity>
+
+      <a-entity id="bottomMenu">
+        <!--  Clock -->
+        <a-entity clock="font: sourcecodepro; color: #191;"></a-entity>
+        <a-circle id="basecircle" radius="1" color="#7BC8A4" position="0 0.1 0" rotation="-90 0 0" visible="true"></a-circle>
+      </a-entity>
+
+      <a-entity id="sideMenu">
+        <!--  Clock -->
+        <a-entity clock="font: sourcecodepro; color: #191;"></a-entity>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      var viewingScene = false;
+      //Firebase initialization
+      var config = {
+                  apiKey: "AIzaSyAi_j5zE2Safbb-pQwJ2y9jSC-SW3t-AGo",
+                  authDomain: "hackvr-f2bdb.firebaseapp.com",
+                  databaseURL: "https://hackvr-f2bdb.firebaseio.com",
+                  projectId: "hackvr-f2bdb",
+                  storageBucket: "hackvr-f2bdb.appspot.com",
+                  messagingSenderId: "961200201842"
+                };
+      firebase.initializeApp(config);
+
+
+      firebase.auth().signInAnonymously().catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // ...
+      });
+
+      // Get a reference to the database service
+      var database = firebase.database();
+
+      var dbRef = firebase.database().ref('/');
+      var currentState;
+      dbRef.on('value', function(snapshot) {
+        // var outputValue;
+        // if(snapshot.val()>.5) {outputValue = 1;} else {outputValue=0}
+
+        // onDBUpdate(outputValue);
+        currentState = snapshot.val();
+        onDBUpdate(snapshot.val());
+      });
+
+      var onDBUpdate = function (val ) {
+        // console.log(val);
+      }
+
+      /* Fixed Clock*/
+      function startTime() {
+        var today = new Date();
+        var h = today.getHours();
+        var m = today.getMinutes();
+        var s = today.getSeconds();
+        m = checkTime(m);
+        s = checkTime(s);
+        var currTime = h + ":" + m + ":" + s;
+        d3.select("#time")
+          .attr('value', currTime);
+        // document.getElementById('time').innerHTML =
+        // h + ":" + m + ":" + s;
+        var t = setTimeout(startTime, 500);
+      }
+      function checkTime(i) {
+          if (i < 10) {i = "0" + i};
+          return i;
+      }
+
+      var openForest = function () {
+        openScene();
+        d3.select("#homeScreen")
+          .transition()
+          .duration(800)
+          .attr('src', "#forest")
+          .attr('visible', true)
+          .attr('opacity', "1");
+      };
+      var openMountains = function () {
+        openScene();
+        d3.select("#homeScreen")
+          .transition()
+          .duration(800)
+          .attr('src', "#mountains")
+          .attr('visible', true)
+          .attr('opacity', "1");
+      };
+// music
+      // init call -- for infinite loop setup
+      var initCall = true;
+      // array of overlapping music
+      var audio = new Array(
+        
+      );
+      audio[0].volume = 0.8;
+      // distraction music
+      var distraction; //new Audio
+      // variable used to keep track of music that is already overlayed
+      var currCounter = 1;
+
+      var audioFunc = function() {
+        if (initCall) {
+          setUpAudio();
+        } else {
+          if (audio[0].paused) {
+            for(i = 0; i < currCounter; i++) {
+              audio[i].play();
+            }
+          } else {
+            distraction.pause();
+            audio[0].pause();
+            for(i = 0; i < audio.length; i++) {
+              audio[i].pause();
+              audio[i].currentTime = 0;
+            }
+            currCounter = 1;
+            initCall = true;
+          }
+        }
+      };
+
+      var stopAudio = function() {
+        distraction.pause();
+        audio[0].pause();
+        for(i = 0; i < audio.length; i++) {
+          audio[i].pause();
+          audio[i].currentTime = 0;
+        }
+        currCounter = 1;
+        initCall = true;
+      }
+
+      var setUpAudio = function() {
+        for(i = 0; i < audio.length; i++) {
+          if (typeof audio[i].loop == 'boolean')
+          {
+            audio[i].loop = true;
+          } else {
+            audio[i].addEventListener('ended', function() {
+            this.currentTime = 0;
+            this.play();
+            }, false)
+          }
+        }
+        initCall = false;
+        audio[0].play();
+      };
+
+      var changeAudio = function() {
+        //use indicator to choose music
+        if(currCounter < audio.length) {
+          audio[currCounter].play();
+          currCounter++;
+        }
+      };
+// end of music functions
+      var visualTracker = 1;
+      var openScene = function () {
+        viewingScene = true;
+        // d3.select("#basecircle")
+        //   .transition()
+        //   .duration(500)
+        //   .attr('radius', 1);
+        d3.select("#homeMenu")
+          .transition()
+          .duration(100)
+          .attr('opacity', "0")
+          .attr('visible', false);
+        d3.select("a-cursor")
+          .transition()
+          .attr('opacity', .25);
+        d3.select("#homeScreen")
+          .transition()
+          .duration(600)
+          .attr('visible', false);
+        d3.select("#basecircle")
+          .attr('visible', true);
+        startTime();
+        audioFunc();
+      };
+
+      setInterval(function(){relax(visualTracker)}, 9000);
+
+// Controls the Visual Add-ons
+      var visualNumber = 1;
+      var changeVisual = function() {
+        if(visualNumber == 1) {
+          d3.select("#dust")
+            .attr('visible', true);
+        }
+        if(visualNumber == 2) {
+          d3.select("#snow")
+            .attr('visible', true);
+        }
+        if(visualNumber == 3) {
+          d3.select("#rain")
+            .attr('visible', true);
+        }
+        visualNumber++;
+      }
+
+      //Removes all visuals from screen
+      var stopVisual = function() {
+        d3.select("#dust")
+          .attr('visible', false);
+        d3.select("#snow")
+          .attr('visible', false);
+        d3.select("#rain")
+          .attr('visible', false);
+        visualNumber = 0;
+      }
+// end of Visual Add-on controls
+
+// Interval function!
+      var distract = false;
+      var relax = function() {
+
+        if (viewingScene){
+          if(currentState.data < 0.5) {
+            console.log(currentState.data);
+            // stopAudio();
+            distraction.play();
+            // stopVisual();
+            // visualTracker = 0;
+            distract = true;
+          } else {
+            if(distract){
+              distraction.pause();
+              distraction.currentTime = 0;
+              // audioFunc();
+            } else {
+              if (visualTracker%2){
+                changeVisual();
+              } else {
+                changeAudio();
+              }
+            }
+            visualTracker++;
+          }
+        }
+      }
+// end of interval functions
+
+      var returnHome = function() {
+        console.log("return home" + viewingScene);
+        if (viewingScene) {
+          // audioFunc();
+          stopAudio();
+          // distraction.play();
+          stopVisual();
+          visualTracker = 0;
+          menuSelect = setTimeout(function(){
+            // d3.selectAll(".menuObject")
+            //      .transition()
+            //      .duration(1000)
+            //      .delay(500)
+            //   .attr("position", "0 0 0");
+            d3.select("#homeScreen")
+              .attr('src', "#home")
+              .attr('visible', true)
+              .attr('opacity', 1);
+            d3.select("#homeMenu")
+              .transition()
+              .duration(2000)
+              .attr('opacity', "1")
+              .attr('visible', true);
+            d3.select("#basecircle")
+              .transition()
+              .delay(300)
+              .duration(1000)
+              .attr('radius', 9)
+              .duration(1000)
+              .attr('radius', 1)
+              .attr('visibility', false);
+            d3.select("a-cursor")
+              .transition()
+              .attr('opacity', 1);
+            viewingScene = false;
+          }, 2000);
+        }};
+
+      var menuSelect;
+      d3.select("#miniMt")
+          .on("mouseenter", function() {
+            d3.selectAll("#miniMt")
+               .transition()
+               .duration(800)
+               .attr('scale', ".35 .35 .35");
+            d3.select("a-cursor")
+              .transition()
+              .attr('color', "green");
+            menuSelect = setTimeout(function(){ openMountains(); }, 800);
+        })
+          .on("mouseleave", function() {
+            d3.selectAll("#miniMt")
+                 .transition()
+                 .duration(1000)
+                 .attr('scale', ".2 .2 .2");
+            d3.select("a-cursor")
+              .transition()
+              .attr('color', "white");
+            clearTimeout(menuSelect);
+          });
+
+      d3.select("#miniTree")
+          .on("mouseenter", function() {
+            d3.selectAll("#miniTree")
+                 .transition()
+                 .duration(800)
+                 .attr('scale', ".6 .6 .6");
+            d3.select("a-cursor")
+              .transition()
+              .attr('color', "green");
+            menuSelect = setTimeout(function(){ openForest(); }, 800);
+        })
+          .on("mouseleave", function() {
+            d3.selectAll("#miniTree")
+                 .transition()
+                 .duration(1000)
+                 .attr('scale', ".4 .4 .4");
+            d3.select("a-cursor")
+              .transition()
+              .attr('color', "white");
+            clearTimeout(menuSelect);
+          });
+
+      d3.select("#bottomMenu")
+          .on("mouseenter", returnHome)
+          .on("mouseleave", function() {
+            // d3.select("#basecircle")
+            //   .transition()
+            //   .delay(250)
+            //   .duration(2000)
+            //   .attr('radius', 1);
+            clearTimeout(menuSelect);
+          });
+
+      var sceneUI = d3.select('#sceneMenu');
+      sceneUI.on('sceneChoice', sceneChoice);  // Custom event
+      function sceneChoice () {
+        // Move the menu-panes up by moving the parent
+        var UIelement = d3.select(this);
+        UIelement.transition()
+                 .duration(1200)
+                 .delay(500)
+                 .attrTween('position', function() {
+                   return d3.interpolate('0 -10 0', '0 0 0');
+                 });
+
+        // Increase opacity for all menu-panes individually
+        var menuPanes = d3.selectAll('.menu-pane');
+        menuPanes.transition()
+                 .duration(1200)
+                 .delay(500)
+                 .attr('opacity', '1');
+      }
+      sceneUI.dispatch('sceneChoice');  // Trigger custom event
+
+        //clock
+        AFRAME.registerComponent('clock', {
+          schema: {
+            position: {type: 'vec3', default: {x: -.57, y: 0.11, z: 0}},
+            rotation: {type: 'vec3', default: {x: -90, y: 0, z: 0}},
+            color: {type: 'color', default: '#0f0'},
+            font: {type: 'string', default: 'monoid'}
+          },
+          init: function () {
+            this.clockEl = document.createElement('a-text');
+            this.el.appendChild(this.clockEl);
+            this.clockEl.setAttribute('position', this.data.position);
+            this.clockEl.setAttribute('rotation', this.data.rotation);
+            this.clockEl.setAttribute('color', this.data.color);
+            this.clockEl.setAttribute('font', this.data.font);
+          },
+          tick: function(){
+            this.clockEl.setAttribute('value', this.getTime());
+          },
+          getTime: function() {
+              var d = new Date();
+              return d.toLocaleTimeString();
+          }
+        });
+
+        var hasMoved = false;
+        var cameraEl = document.querySelector('#camera');
+        cameraEl.addEventListener('componentchanged', function (evt) {
+          if(!hasMoved) {
+              d3.select("a-cursor")
+                .transition()
+                .duration(2000)
+                .attr('opacity', 1);
+              hasMoved = true;
+          }
+          rotationNow = cameraEl.getAttribute("rotation");
+          if(Math.abs(Math.abs(rotation1sBefore['x']) - Math.abs(rotationNow['x']))>30 ||
+             Math.abs(Math.abs(rotation1sBefore['y']) - Math.abs(rotationNow['y']))>30 ) {
+           }
+        });
+
+        var rotation1sBefore;
+        var rotationNow = cameraEl.getAttribute("rotation");
+        var fastHead;
+        setInterval(function() {
+          clearTimeout(fastHead);
+          // Get your new lat and lng values from somewhere
+          rotation1sBefore = rotationNow;
+
+          // Now set them on the markers array (this is a very brief example)
+          rotationNow = cameraEl.getAttribute("rotation");
+          // console.log(rotationNow['x']);
+        }, 1 * 500 /* interval is in milliseconds */ );
+
+
+    </script>
+  </body>
+</html>
