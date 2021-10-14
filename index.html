@@ -73,8 +73,6 @@
       </a-camera>
 
       <a-entity camera look-controls>
-<!--         <a-text id="time" scale="0.3 0.3 0.3" position="-1 0 -1"
-                  value="clock" color="#fff"></a-text> -->
       </a-entity>
 
       <a-entity id="bottomMenu">
@@ -134,15 +132,14 @@
       // init call -- for infinite loop setup
       var initCall = true;
       // array of overlapping music
-      var audio = new Array(new Audio('https://cdn.glitch.com/b4f4d521-4cdc-400e-a428-c1b11013cb06%2F1ambiance.aac?1494793522720'),
-        new Audio('https://cdn.glitch.com/b4f4d521-4cdc-400e-a428-c1b11013cb06%2F2drone.aac?1494793522449'),
-        new Audio('https://cdn.glitch.com/b4f4d521-4cdc-400e-a428-c1b11013cb06%2F3harmony.aac?1494793526732'),
-        new Audio('https://cdn.glitch.com/b4f4d521-4cdc-400e-a428-c1b11013cb06%2F5choir.aac?1494793523839')
+      var audio = new Array(new Audio('https://cdn.glitch.me/e3f83d2d-8560-4e2f-a8f5-e860452333e9%2Ftrack1.aac?v=1634199207465'),
+        new Audio('https://cdn.glitch.me/e3f83d2d-8560-4e2f-a8f5-e860452333e9%2Ftrack2.aac?v=1634199215049'),
+        new Audio('https://cdn.glitch.me/e3f83d2d-8560-4e2f-a8f5-e860452333e9%2Ftrack3.aac?v=1634199213404')
         
       );
       audio[0].volume = 0.8;
       // distraction music
-      var distraction; //new Audio
+      var distraction = new Audio('https://cdn.glitch.com/b4f4d521-4cdc-400e-a428-c1b11013cb06%2F4piano.aac?1494793523482'); //new Audio
       // variable used to keep track of music that is already overlayed
       var currCounter = 1;
 
